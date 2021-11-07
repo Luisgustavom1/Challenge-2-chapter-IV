@@ -29,6 +29,10 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
       //     value.type === ('PNG' || 'JPEG' || 'GIF') ||
       //     'Somente são aceitos arquivos PNG, JPEG e GIF',
       // },
+      validate: {
+        lessThan10MB: value =>
+          value[0].size < 10000000 || 'O arquivo deve ser menor que 10MB',
+      },
     },
     title: {
       required: {
@@ -86,7 +90,7 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
         });
         return;
       }
-      mutation.mutateAsync(data);
+      await mutation.mutateAsync(data);
       toast({
         status: 'info',
         title: 'Imagem cadastrada',

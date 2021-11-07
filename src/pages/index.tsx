@@ -8,10 +8,28 @@ import { api } from '../services/api';
 import { Loading } from '../components/Loading';
 import { Error } from '../components/Error';
 
+interface FetchImagesReturn {
+  after?: {
+    id: string;
+  };
+  data: {
+    title: string;
+    description: string;
+    url: string;
+    ts: number;
+    id: string;
+  }[];
+}
+
 export default function Home(): JSX.Element {
-  const fetchImages = async ({ pageParam = null }): any => {
-    const data = await api.get(`/images`);
-    console.log('data', data);
+  const fetchImages = async ({
+    pageParam = null,
+  }): Promise<FetchImagesReturn> => {
+    const { data } = await api.get(`/images`, {
+      params: {
+        after: pageParam,
+      },
+    });
 
     return data;
   };
@@ -24,15 +42,17 @@ export default function Home(): JSX.Element {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery('images', fetchImages, {
-    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+    getNextPageParam: lastPage => lastPage.after || null,
   });
-  useEffect(() => {
-    fetchImages({});
-  }, []);
   const formattedData = useMemo(() => {
-    return data?.pages[0].data[0]?.flat();
+    console.log('data', data);
+
+    return data?.pages.map(image => image.data).flat();
   }, [data]);
 
+  useEffect(() => {
+    console.log('formattedData', formattedData);
+  }, [formattedData]);
   if (isLoading) {
     return <Loading />;
   }
