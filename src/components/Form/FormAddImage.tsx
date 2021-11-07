@@ -72,20 +72,10 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
     useForm();
   const { errors } = formState;
 
-  interface submitedFormData {
-    image: {
-      length: number;
-    };
-    description: string;
-    title: string;
-  }
-
-  const onSubmit = async (
-    data: Record<string, submitedFormData>
-  ): Promise<void> => {
+  const onSubmit = async (data: Record<string, unknown>): Promise<void> => {
     try {
       console.log('data', data);
-      if (data.image.length === 0) {
+      if (imageUrl.length === 0) {
         toast({
           status: 'info',
           title: 'Imagem não adicionada',
@@ -96,8 +86,14 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
         });
         return;
       }
-      // TODO EXECUTE ASYNC MUTATION
-      // TODO SHOW SUCCESS TOAST
+      mutation.mutateAsync(data);
+      toast({
+        status: 'info',
+        title: 'Imagem cadastrada',
+        description: 'Sua imagem foi cadastrada com sucesso.',
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
       toast({
         title: 'Falha no cadastro',
@@ -107,7 +103,10 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
         isClosable: true,
       });
     } finally {
-      // TODO CLEAN FORM, STATES AND CLOSE MODAL
+      reset();
+      setImageUrl('');
+      setLocalImageUrl('');
+      closeModal();
     }
   };
 
