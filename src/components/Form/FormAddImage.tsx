@@ -11,6 +11,12 @@ interface FormAddImageProps {
   closeModal: () => void;
 }
 
+interface NewImageType {
+  url: string;
+  title: string;
+  description: string;
+}
+
 export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
   const [imageUrl, setImageUrl] = useState('');
   const [localImageUrl, setLocalImageUrl] = useState('');
@@ -63,8 +69,12 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
 
   const queryClient = useQueryClient();
   const mutation = useMutation(
-    data => {
-      return api.post('/images', data);
+    (data: NewImageType) => {
+      return api.post('/images', {
+        title: data.title,
+        description: data.description,
+        url: imageUrl,
+      });
     },
     {
       onSuccess: () => {
@@ -77,9 +87,8 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
     useForm();
   const { errors } = formState;
 
-  const onSubmit = async (data: Record<string, unknown>): Promise<void> => {
+  const onSubmit = async (data: NewImageType): Promise<void> => {
     try {
-      console.log('data', data);
       if (imageUrl.length === 0) {
         toast({
           status: 'info',

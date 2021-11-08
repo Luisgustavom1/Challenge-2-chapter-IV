@@ -45,14 +45,9 @@ export default function Home(): JSX.Element {
     getNextPageParam: lastPage => lastPage.after || null,
   });
   const formattedData = useMemo(() => {
-    console.log('data', data);
-
     return data?.pages.map(image => image.data).flat();
   }, [data]);
 
-  useEffect(() => {
-    console.log('formattedData', formattedData);
-  }, [formattedData]);
   if (isLoading) {
     return <Loading />;
   }
